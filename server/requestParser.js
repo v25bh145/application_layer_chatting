@@ -3,7 +3,14 @@
  */
 let Mapper = require("./requestMapper");
 
-let requestParse = function(message) {
+exports.isFullChOl = function(chunk) {
+    let array = [];
+    array = chunk.slice("\r\n");
+    if((array[0].splice(" "))[0] == "ch-ol" && array[array.length - 1] == "end") return true;
+    else return false;
+}
+
+exports.parse = function(message) {
     //可扩展，通过在此添加Mapper组合即可实现过滤任何信息/转换信息的操作
 
     let mapper = Mapper.mapper(message);
@@ -25,18 +32,11 @@ let requestParse = function(message) {
 
     let body = mapper.bodyMapper();
     if(body.error == true) return body;
-
-/**
- * TODO:
- * 1. bodyMapper
- * 2. serverController 
- */
     
     return {error: false, message: {
-        body: body,
-        method: method,
-        ip: headers["host"],
-        bodyType: headers["body-type"]
+        body: body.message,
+        method: method.message,
+        ip: headers.message["host"],
+        bodyType: headers.message["body-type"]
     }};
 }
-exports.parse = requestParse;

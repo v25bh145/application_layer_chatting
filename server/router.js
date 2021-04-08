@@ -3,10 +3,11 @@ let userRepository = require("./userRepository");
 let route = function(request, respond, socket) {
     //中间件
     //查询ip是否有起名
-    if(!userRepository.checkIp(request.ip)) {
+    if(!userRepository.getUserName(request.ip)) {
         //没有起名，发送起名询问
         return serverController.questName(request, respond, socket);
     } else {
+        //路由主体
         switch (request.method) {
             case "c2sInstruction":
                 return serverController.c2sInstruction(request, respond, socket);

@@ -1,51 +1,39 @@
-let ipsToNames = [];
-let ipsToUsers = [];
+let userToName = [];
+let userToIp = [];
 let counts = 0;
 exports.storeUser = function (nickName, ip, socket) {
-    for(let otherIp in ipsToNames)
-        if(ipsToNames[otherIp] == nickname) return false;
+    
+    for(let otherUser in userToName)
+        if(userToName[otherUser] == nickname) return false;
 
-    ipsToNames[ip] = nickName;
-    ipsToUsers[ip] = socket;
+    userToName[socket] = nickName;
+    userToIp[socket] = ip;
+
     counts++;
     return true;
 }
-exports.deleteUser = function(ip) {
-    delete ipsToNames[ip];
-    delete ipsToUsers[ip];
+exports.deleteUser = function(socket) {
+    delete userToName[socket];
+    delete userToIp[socket];
     counts--;
-}
-exports.deleteUserBySocket = function(socket) {
-    for(let ip in ipsToUsers)
-        if(ipsToUsers[ip] == socket) {
-            delete ipsToUsers[ip];
-            delete ipsToNames[ip];
-            counts--;
-            break;
-        }
 }
 exports.getUserCounts = function() {
     return counts;
 }
-exports.checkIp = function (ip) {
-    if(typeof(ipsToNames[ip]) == "undefined") return false;
-    else return ipsToNames[ip];
+exports.getUserName = function (user) {
+    if(typeof(userToName[user]) == "undefined") return false;
+    else return userToName[user];
 }
-exports.me = function(ip) {
+exports.me = function(user) {
     let userArray = [];
-    for(let otherIps in ipsToUsers) {
-        if(otherIps == ip) {
-            userArray.push(ipsToUsers[otherIps]);
-            break;
-        }
-    }
+    userArray.push(user);
     return userArray;
 }
-exports.insteadOfMe = function(ip) {
+exports.insteadOfMe = function(user) {
     let userArray = [];
-    for(let otherIps in ipsToUsers) {
-        if(otherIps != ip) {
-            userArray.push(ipsToUsers[otherIps]);
+    for(let otherUser in userToName) {
+        if(otherUser != user) {
+            userArray.push(otherUser);
         }
     }
     return userArray;

@@ -6,7 +6,6 @@ let requestParser = require("./requestParser");
 let errorHandler = require("./errorHandler");
 let router = require("./router");
 let respondWrapper = require("./respondWrapper");
-let chOlReceiver = require("./chOlReceiver");
 let userRepository = require("./userRepository");
 
 /**
@@ -20,8 +19,7 @@ let server = net.createServer(function (socket) {
     let data = "";
 
     socket.on('data', function (chunk) {
-
-        if (chOlReceiver.isFullChOl(chunk)) {
+        if (requestParser.isFullChOl(chunk)) {
             //初始化respond对象
             let respond = respondWrapper.initRespond();
             //将ch-ol转换为request对象
@@ -47,7 +45,7 @@ let server = net.createServer(function (socket) {
     })
 
     socket.on('close', function () {
-        userRepository.deleteUserBySocket(socket);
+        userRepository.deleteUser(socket);
     });
 });
 /**
