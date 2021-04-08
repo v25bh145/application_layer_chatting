@@ -18,7 +18,7 @@ exports.transRespondToChOl = function(respond) {
     chOl += respond.method + "\r\n";
     chOl += respond.status + "\r\n";
     chOl += "header" + "\r\n";
-    //no header
+    //respond have not header now
     chOl += "body" + "\r\n";
     chOl += respond.send + "\r\n";
     chOl += "end" + "\r\n";

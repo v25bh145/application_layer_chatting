@@ -2,12 +2,12 @@
  * 模块依赖
  */
 let net = require('net');
-let messageParser = require("./serverMessageParser");
+let requestParser = require("./requestParser");
 let errorHandler = require("./errorHandler");
-let router = require("./serverRouter");
-let respondWrapper = require("./serverRespondWrapper");
+let router = require("./router");
+let respondWrapper = require("./respondWrapper");
 let chOlReceiver = require("./chOlReceiver");
-let userModel = require("./userModel");
+let userRepository = require("./userRepository");
 
 /**
  * 创建服务器
@@ -25,7 +25,7 @@ let server = net.createServer(function (socket) {
             //初始化respond对象
             let respond = respondWrapper.initRespond();
             //将ch-ol转换为request对象
-            let request = messageParser.parse(chunk);
+            let request = requestParser.parse(chunk);
             if(request.error == true) errorHandler.printError(request);
             else {
                 //路由器，后转控制器
@@ -47,7 +47,7 @@ let server = net.createServer(function (socket) {
     })
 
     socket.on('close', function () {
-        userModel.deleteUserBySocket(socket);
+        userRepository.deleteUserBySocket(socket);
     });
 });
 /**

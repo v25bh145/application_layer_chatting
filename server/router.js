@@ -1,9 +1,9 @@
 let serverController = require("./serverController");
-let userModel = require("./userModel");
+let userRepository = require("./userRepository");
 let route = function(request, respond, socket) {
     //中间件
     //查询ip是否有起名
-    if(!userModel.checkIp(request.ip)) {
+    if(!userRepository.checkIp(request.ip)) {
         //没有起名，发送起名询问
         return serverController.questName(request, respond, socket);
     } else {

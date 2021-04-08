@@ -1,9 +1,9 @@
 /**
  * 服务器的应用层报文处理
  */
-let Mapper = require("./mapper");
+let Mapper = require("./requestMapper");
 
-let serverMessageParser = function(message) {
+let requestParse = function(message) {
     //可扩展，通过在此添加Mapper组合即可实现过滤任何信息/转换信息的操作
 
     let mapper = Mapper.mapper(message);
@@ -39,4 +39,4 @@ let serverMessageParser = function(message) {
         bodyType: headers["body-type"]
     }};
 }
-exports.parse = serverMessageParser;
+exports.parse = requestParse;
