@@ -8,6 +8,7 @@ exports.s2cTest = function(respond, request) {
             result.error = false;
             result.isSendToServerWaiting = true;
             request = requestWrapper.setRequest(request, "00", "name", "");
+            //TODO this way please!
             result.request = request;
             break;
         case "file-check":

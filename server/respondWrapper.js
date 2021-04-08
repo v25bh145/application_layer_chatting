@@ -19,9 +19,11 @@ exports.transRespondToChOl = function(respond) {
     chOl += respond.method + "\r\n";
     chOl += respond.status + "\r\n";
     chOl += "header" + "\r\n";
-    //respond have not header now
-    if(typeof(respond.bodyType) != "undefined")
-        chOl += "body-type " + respond.bodyType;
+    //为指令时，默认为文字
+    if(typeof(request.bodyType) == "undefined")
+        chOl += "body-type " + "text" + "\r\n";
+    else
+        chOl += "body-type " + request.bodyType + "\r\n";
     chOl += "body" + "\r\n";
     chOl += respond.send + "\r\n";
     chOl += "end" + "\r\n";

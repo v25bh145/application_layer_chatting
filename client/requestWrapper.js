@@ -4,6 +4,7 @@ exports.initRequest = function() {
     request.version = "0.0.1";
     return request;
 }
+//client版本的setRequest方法如果没有设置默认不覆盖原先数据
 exports.setRequest = function(request, method, send, bodyType = undefined) {
     if(typeof(request.method) != "undefined")
         request.method = method;
@@ -18,11 +19,12 @@ exports.transRequestToChOl = function(request) {
     let chOl = "";
     chOl += request.protocol + " " + request.version + "\r\n";
     chOl += request.method + "\r\n";
-    chOl += request.status + "\r\n";
     chOl += "header" + "\r\n";
-    //request have not header now
-    if(typeof(request.bodyType) != "undefined")
-        chOl += "body-type " + request.bodyType;
+    //为指令时，默认为文字
+    if(typeof(request.bodyType) == "undefined")
+        chOl += "body-type " + "text" + "\r\n";
+    else
+        chOl += "body-type " + request.bodyType + "\r\n";
     chOl += "body" + "\r\n";
     chOl += request.send + "\r\n";
     chOl += "end" + "\r\n";
