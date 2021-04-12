@@ -15,30 +15,24 @@ class Wait {
         that.canInputMessage = canInputMessage;
         that.match = match;
         that.request = request;
-    };
+    }
     //考虑到后面可能将数据存在缓存数据库中，因此设置成可以异步的方法。
     save(callback) {
         return this.repository.save(this, callback);
-    };
+    }
     delete(callback) {
         return this.repository.delete(this, callback);
-    };
-    //检查用户输入数据规范
-    checkMessage(message) {
-        let that = this;
-        if(message.match(that.match) == null) return false;
-        else return true;
-    };
-};
+    }
+}
 exports.form = function (canInputMessage, match, request) {
-    console.log("DEBUG: " + typeof(match));
-    if(typeof(canInputMessage) != "string") {
+    console.log("DEBUG: " + typeof match);
+    if (typeof canInputMessage != "string") {
         //TODO: errorHandler
     }
-    if(typeof(match) != "object") {
+    if (typeof match != "object") {
         //TODO: errorHandler
     }
-    if(typeof(request) != "object") {
+    if (typeof request != "object") {
         //TODO: errorHandler
     }
     return new Wait(canInputMessage, match, request);
