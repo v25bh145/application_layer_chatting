@@ -3,7 +3,7 @@ class Mapper {
     _cols = 0;
     constructor(message = "") {
         let that = this;
-        that._segments = message.split("\n");
+        that._segments = message.split("\r\n");
         that._cols = 0;
     }
     protocolInfoMapper = () => {
@@ -39,6 +39,19 @@ class Mapper {
     statusMapper = () => {
         //读取状态信息
         let that = this;
+        let status = that._segments[that._cols++];
+        switch(status) {
+            case "00": 
+                return {error: false, message: "00"};
+            case "01": 
+                return {error: false, message: "01"};
+            case "10": 
+                return {error: false, message: "10"};
+            case "11": 
+                return {error: false, message: "11"};
+            default: 
+                return {error: true, message: "can not read the status in cols:" + that._cols};
+        }
     }
     headerMapper = () => {
         //读取头信息
@@ -49,7 +62,7 @@ class Mapper {
             if(declaim == "body") return {error: false, message: headers};
             else return {error: true, message: "unsupported data in cols:" +that._cols};
         for(; ; that._cols++) {
-            if(typeof(that._segments[that._cols]) == "undefined" || typeof(that._segments[that._cols]) == "body") break;
+            if(typeof(that._segments[that._cols]) == "undefined" || that._segments[that._cols] == "body") break;
             let key_value = that._segments[that._cols].split(" ");
             if(key_value.length != 2) return {error: true, message: "unsupported headers in cols:" +that._cols};
             headers[key_value[0]] = key_value[1];   
@@ -64,7 +77,7 @@ class Mapper {
         if(declaim!= "body") return {error: true, message: "unsupported data in cols:" +that._cols};
     
         for(; ; that._cols++) {
-            if(typeof(that._segments[that._cols]) == "undefined") return {error: false, message: body};
+            if(typeof(that._segments[that._cols]) == "undefined" || that._segments[that._cols] == "end") return {error: false, message: body};
             body += that._segments[that._cols]; 
         }
         // return {error: false, message: body};

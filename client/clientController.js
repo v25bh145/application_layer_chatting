@@ -1,68 +1,63 @@
-let userRepository = require("./userRepository");
-let respondWrapper = require("./respondWrapper");
+let waitRepository = require("./waitRepository");
+let requestWrapper = require("./requestWrapper");
 exports.s2cTest = function(respond, request) {
-    let result;
-    let instrHead = request.body.slice(" ");
+    console.log(respond);
+    let result = {};
+    let instrHead = respond.body.split(" ");
     switch(instrHead[0]) {
         case "name-check":
+            //等待客户端输入后发送，卡输入
+
             result.error = false;
             result.isSendToServerWaiting = true;
-            request = requestWrapper.setRequest(request, "00", "name", "");
-            //TODO this way please!
-            result.request = request;
+
+            request = requestWrapper.setRequestNotCovered(request, "00", "name", "text");
+
+            //正则匹配
+            //name [字母/数字/下划线]+
+            let match = /name ([A-Z]|[0-9]|[a-z]|\_)+/g;
+            let wait = waitRepository.waitWrapper(request, match, false);
+            result.wait = wait;
+
+            result.isPrinted = true;
+            result.message = "Hello, please input your name and press enter!";
+
             break;
         case "file-check":
+            //等待客户端输入后发送，不卡输入
             break;
         case "line-check":
+            //立即发送
             break;
-        case "default":
+        default:
             result.error = true;
             result.message = "undefined ch-ol instruction from server";
-        // case "name":
-        //     if(typeof(instrHead[1]) == "undefined" || !userRepository.storeUser(instrHead[1], socket)) {
-        //         respond = respondWrapper.setRespond("11", "10", "name-check", userRepository.me(request.ip));
-        //     } else {
-        //         let welcome = "> name success, welcome " + instrHead[1] + " !";
-        //         respond = respondWrapper.setRespond("00", "01", welcome, userRepository.me(request.ip));
-        //     }
-        //     break;
-        // case "link-success":
-        //     //TODO
-        //     break;
-        // case "file":
-        //     //TODO
-        //     break;
-        // default:
-        //     //向客户端发送错误信息
-        //     //以11为方法，10为状态码发送
-        //     let errorInfo = "> unsupported type of instruct";
-        //     respond = respondWrapper.setRespond("10", "11", errorInfo, userRepository.me(request.ip));
-        //     break;
     }
     return result;
 }
 exports.s2cMessage = function(respond, request) {
-    switch(request.bodyType) {
+    let result = {};
+    switch(respond.bodyType) {
         case "voice":
             //TODO
             break;
         case "text":
             //向本端打印消息
-            
+            result.error = false;
+            result.isPrinted = true;
+            result.message = respond.body;
             break;
         case "file":
             //TODO
             break;
         default:
-            //向客户端发送错误信息
-            //以11为方法，10为状态码发送
-            let errorInfo = "> unsupported type of message"
-            respond = respondWrapper.setRespond("10", "11", errorInfo, userRepository.me(request.ip));
-            break;
+            result.error = true;
+            result.message = "undefined file type from server";
     }
-    return respond;
+    return result;
 }
 exports.noMethod = function(respond, request) {
+    let result = {};
     result.error = true;
     result.message = "> unsupported operation from server";
     return result;

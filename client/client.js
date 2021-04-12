@@ -1,10 +1,13 @@
 /**
  * 模块依赖
  */
-let net = require('net');
-let respondParser = require('./respondParser');
-let readline = require('readline');
-let waitRepository = require('./waitRepository');
+let net = require("net");
+let respondParser = require("./respondParser");
+let readline = require("readline");
+let waitRepository = require("./waitRepository");
+let requestWrapper = require("./requestWrapper");
+let errorHandler = require("./errorHandler");
+let router = require("./router");
 
 let rl=readline.createInterface(process.stdin,process.stdout);
 
@@ -14,29 +17,32 @@ let socket = net.connect(3000, "127.0.0.1", () => {
 
 socket.setEncoding('utf8');
 
-socket.write("ch-ol 0.0.1\n00\nheader\nhost 127.0.0.1\nbody-type text");
-
 let data = "";
 socket.addListener("data", function(chunk) {
   if (respondParser.isFullChOl(chunk)) {
     //初始化request对象
-    let request = requestWrapper.initRespond();
+    let request = requestWrapper.initRequest();
     //将ch-ol转换为respond对象
-    let respond = respondParser.parse(chunk);
-    if(respond.error == true) errorHandler.printError(respond);
+    let respondWrapped = respondParser.parse(chunk);
+    if(respondWrapped.error == true) errorHandler.printError(respondWrapped);
     else {
+        let respond = respondWrapped.message;
+        console.log("接收到响应");
+        console.log(respond);
         //路由器，后转控制器
         result = router.route(respond, request);
+        console.log("产生结果")
+        console.log(result);
         if(typeof(result.error) != "undefined" && result.error == true) errorHandler.printError(result);
         else {
           if(typeof(result.isSendToServerInstant) != "undefined" && result.isSendToServerInstant) {
             let chOl = requestWrapper.transRequestToChOl(result.request);
             socket.write(chOl);
-            waitRepository.setWait(result.request);
           } else if(typeof(result.isSendToServerWaiting) != "undefined" && result.isSendToServerWaiting) {
-            /*将result.request 包装为wait对象*/
+            //将result.request 包装为wait对象
+            waitRepository.setWait(result.wait);
           }
-          if(result.isPrinted) {
+          if(typeof(result.isPrinted) != "undefined" && result.isPrinted) {
             console.log(result.message)
           }
         }
@@ -48,11 +54,46 @@ socket.addListener("data", function(chunk) {
 });
 
 rl.on('line', function (line) {
-  if(waitRepository.getWaitQueueCounts > 0) {
+  let testFlag = false;
+  //检查是否有请求在等待输入
+  if(waitRepository.getWaitCount() > 0) {
     //客户端正在等待用户回应
-    //检查输入-否则重来
-  } else {
-    //正常发送消息
-
+    //请求是否会卡住用户发送信息
+    if(waitRepository.getWait().canInputMessage) {
+      //用户输入的数据是否符合请求规定的规范
+      if(waitRepository.waitMessageCheck(line)) {
+        //发送test包
+        testFlag = true;
+      } else {
+        //发送message包
+        testFlag = false;
+      }
+    } else {
+      if(waitRepository.waitMessageCheck(line)) {
+        //发送test包
+        testFlag = true;
+      } else {
+        //报错，重来
+        console.log("error> oops, please input the correct respond from server...");
+        return;
+      }
+    }
   }
+  let request = "";
+  if(testFlag) {
+    //发送test包
+    console.log("发送test包");
+    let nowWait = waitRepository.getWait();
+    waitRepository.deleteWait();
+    request = nowWait.request;
+    request = requestWrapper.setRequestCovered(request, "00", line, "text");
+  } else {
+    //发送message包
+    //初始化request对象
+    console.log("发送message包");
+    request = requestWrapper.initRequest();
+    request = requestWrapper.setRequestCovered(request, "01", line, "text");
+  }
+  let chOl = requestWrapper.transRequestToChOl(request);
+  socket.write(chOl);
 });

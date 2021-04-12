@@ -3,7 +3,7 @@ let route = function(respond, request) {
     //中间件
 
     //路由主体
-    switch (request.method) {
+    switch (respond.method) {
         case "s2cTest":
             return clientController.s2cTest(respond, request);
         case "s2cMessage":
