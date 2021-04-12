@@ -1,5 +1,5 @@
-let waitRepository = require("./waitRepository");
-let requestWrapper = require("./requestWrapper");
+let waitModel = require("../Models/waitModel");
+let requestWrapper = require("../../clientChOlLib/RequestHandler/requestWrapper");
 exports.s2cTest = function(respond, request) {
     console.log(respond);
     let result = {};
@@ -16,7 +16,7 @@ exports.s2cTest = function(respond, request) {
             //正则匹配
             //name [字母/数字/下划线]+
             let match = /name ([A-Z]|[0-9]|[a-z]|\_)+/g;
-            let wait = waitRepository.waitWrapper(request, match, false);
+            let wait = waitModel.form(false, match, request);
             result.wait = wait;
 
             result.isPrinted = true;

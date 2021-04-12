@@ -1,4 +1,4 @@
-let clientController = require("./clientController");
+let clientController = require("../app/Controllers/clientController");
 let route = function(respond, request) {
     //中间件
 
