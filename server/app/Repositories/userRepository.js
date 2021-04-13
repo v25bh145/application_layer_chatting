@@ -1,39 +1,32 @@
-let idToSocket = [];
-let idToName = [];
+let userArray = [];
 let counts = 0;
-let ids = 0;
 let findIdBySocket = function(socket) {
-    for(let id in idToSocket)
-        if(idToSocket[id] == socket) {
+    for(let id in userArray)
+        if(userArray[id].socket == socket) {
             return id;
         }
     return -1;
 } 
-exports.save = function (nickName, socket) {
-    for(let id in idToName)
-        if(idToName[id] == nickName) return false;
+exports.save = function (user) {
+    for(let id in userArray)
+        if(userArray[id].nickName == user.nickName) return false;
 
-    idToSocket[ids] = socket;
-    idToName[ids] = nickName;
+    userArray[user.id] = user;
     counts++;
-    ids++;
     return true;
 }
-exports.delete = function(socket) {
-    let id = findIdBySocket(socket);
-    if(id == -1) return false;
-    delete idToSocket[id];
-    delete idToName[id];
+exports.delete = function(user) {
+    delete userArray[user.id];
     count--;
     return false;
 }
 exports.getCounts = function() {
     return counts;
 }
-exports.getUserName = function (socket) {
+exports.getUserBySocket = function (socket) {
     let id = findIdBySocket(socket);
     if(id == -1) return false;
-    return idToName[id];
+    return userArray[id];
 }
 exports.me = function(socket) {
     let socketArray = [];
@@ -43,9 +36,9 @@ exports.me = function(socket) {
 exports.insteadOfMe = function(socket) {
     let socketArray = [];
     let id = findIdBySocket(socket);
-    for(let otherId in idToName)
+    for(let otherId in userArray)
         if(otherId != id) {
-            socketArray.push(idToSocket[otherId]);
+            socketArray.push(userArray[otherId].socket);
         } 
     return socketArray;
 }

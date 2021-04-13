@@ -1,10 +1,12 @@
 let userRepository = require("../Repositories/userRepository");
-let respondWrapper = require("../../serverChOlLib/RespondHandlerrespondWrapper");
+let userModel = require("../Models/userModel");
+let respondWrapper = require("../../serverChOlLib/RespondHandler/respondWrapper");
 exports.c2sInstruction = function(request, respond, socket) {
     let instrHead = request.body.split(" ");
     switch(instrHead[0]) {
         case "name":
-            if(typeof(instrHead[1]) == "undefined" || !userRepository.storeUser(instrHead[1], socket)) {
+            let user = userModel.form(socket, instrHead[1])
+            if(typeof(instrHead[1]) == "undefined" || !user.save()) {
                 respond = respondWrapper.setRespond(respond, false, "11", "10", "name-check", userRepository.me(socket));
             } else {
                 let welcome = "> welcome " + instrHead[1] + " !";
@@ -33,7 +35,7 @@ exports.c2sMessage = function(request, respond, socket) {
             break;
         case "text":
             //向其他人发送广播
-            respond = respondWrapper.setRespond(respond, false, "00", "11", userRepository.getUserName(socket) + ": " + request.body, userRepository.insteadOfMe(socket));
+            respond = respondWrapper.setRespond(respond, false, "00", "11", userRepository.getUserBySocket(socket).nickName + ": " + request.body, userRepository.insteadOfMe(socket));
             break;
         case "file":
             //TODO

@@ -4,9 +4,9 @@
 let net = require("net");
 let readline = require("readline");
 //从终端接收数据
-let lineService = require("./app/Providers/lineService");
+let lineService = require("./app/Services/lineService");
 //从服务器接收数据
-let dataReceiveService = require("./app/Providers/dataReceiveService");
+let dataReceiveService = require("./app/Services/dataReceiveService");
 
 let socket = net.connect(3000, "127.0.0.1", () => {
     console.log("连接成功！");
