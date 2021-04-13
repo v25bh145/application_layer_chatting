@@ -48,8 +48,8 @@ exports.transRequestToChOl = function (request) {
         chOl += "body-type " + "text" + "\r\n";
     else chOl += "body-type " + request.bodyType + "\r\n";
     chOl += "host " + request.host + "\r\n";
-    chOl += "body" + "\r\n";
+    chOl += "body " + request.send.length + "\r\n";
     chOl += request.send + "\r\n";
-    chOl += "end";
+    console.log(chOl);
     return chOl;
 };

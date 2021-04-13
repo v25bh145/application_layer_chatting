@@ -1,5 +1,5 @@
-let serverController = require("./serverController");
-let userRepository = require("./userRepository");
+let serverController = require("../app/Controllers/serverController");
+let userRepository = require("../app/Repositories/userRepository");
 let route = function(request, respond, socket) {
     //中间件
     //查询ip是否有起名

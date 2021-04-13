@@ -26,8 +26,7 @@ exports.transRespondToChOl = function(respond) {
         chOl += "body-type " + "text" + "\r\n";
     else
         chOl += "body-type " + respond.bodyType + "\r\n";
-    chOl += "body" + "\r\n";
+    chOl += "body " + respond.send.length + "\r\n";
     chOl += respond.send + "\r\n";
-    chOl += "end";
     return chOl;
 }

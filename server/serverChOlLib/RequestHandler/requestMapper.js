@@ -58,26 +58,6 @@ class Mapper {
                 };
         }
     };
-    statusMapper = () => {
-        //读取状态信息
-        let that = this;
-        let status = that._segments[that._cols++];
-        switch (status) {
-            case "00":
-                return { error: false, message: "00" };
-            case "01":
-                return { error: false, message: "01" };
-            case "10":
-                return { error: false, message: "10" };
-            case "11":
-                return { error: false, message: "11" };
-            default:
-                return {
-                    error: true,
-                    message: "can not read the status in cols:" + that._cols,
-                };
-        }
-    };
     headerMapper = () => {
         //读取头信息
         let that = this;
@@ -131,7 +111,7 @@ class Mapper {
         // return {error: false, message: body};
     };
 
-    _methodMapService = ["s2cTest", "s2cMessage"];
+    _methodMapService = ["c2sInstruction", "c2sMessage"];
     methodCheckServer = (method) => {
         let that = this;
         let flag = false;
@@ -144,24 +124,37 @@ class Mapper {
         else return { error: false, message: "" };
     };
 
+    _hostMapServer = /((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)/;
     _bodyTypeMapSerer = ["text", "voice", "file"];
-    //bodyType
+    //host bodyType
     headersCheckServer = (headers) => {
         let that = this;
+        let flag = false;
         headers = headers.message;
 
-        let bodyType = headers["body-type"];
+        let host = "";
+        if (typeof headers["host"] == "undefined" || headers["host"] == null)
+            return { error: true, message: "headers have not host" };
+        else host = headers["host"];
+        if (host.search(that._hostMapServer) != 0)
+            return { error: true, message: "unsupported host" };
 
-        if (typeof bodyType != "undefined") {
-            let bodyTypeFlag = false;
-            for (let i = 0; i < that._bodyTypeMapSerer.length; i++)
-                if (that._bodyTypeMapSerer[i] == bodyType) {
-                    bodyTypeFlag = true;
-                    break;
-                }
-            if (!bodyTypeFlag)
-                return { error: true, message: "unsupported body-type" };
-        }
+        let bodyType = "";
+        if (
+            typeof headers["body-type"] == "undefined" ||
+            headers["body-type"] == null
+        )
+            return { error: true, message: "headers have not body-type" };
+        else bodyType = headers["body-type"];
+
+        let bodyTypeFlag = false;
+        for (let i = 0; i < that._bodyTypeMapSerer.length; i++)
+            if (that._bodyTypeMapSerer[i] == bodyType) {
+                bodyTypeFlag = true;
+                break;
+            }
+        if (!bodyTypeFlag)
+            return { error: true, message: "unsupported body-type" };
 
         return { error: false, message: "" };
     };

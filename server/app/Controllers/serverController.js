@@ -1,5 +1,5 @@
-let userRepository = require("./userRepository");
-let respondWrapper = require("./respondWrapper");
+let userRepository = require("../Repositories/userRepository");
+let respondWrapper = require("../../serverChOlLib/RespondHandlerrespondWrapper");
 exports.c2sInstruction = function(request, respond, socket) {
     let instrHead = request.body.split(" ");
     switch(instrHead[0]) {

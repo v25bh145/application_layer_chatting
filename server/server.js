@@ -23,7 +23,7 @@ let server = net.createServer(function (socket) {
             let respond = respondWrapper.initRespond();
             //将ch-ol转换为request对象
             let requestWrapped = requestParser.parse(chunk);
-            if(requestWrapped.error == true) errorHandler.printError(request);
+            if(requestWrapped.error == true) errorHandler.printError(requestWrapped);
             else {
                 //路由器，后转控制器
                 let request = requestWrapped.message;

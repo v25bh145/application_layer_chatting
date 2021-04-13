@@ -25,7 +25,6 @@ class Wait {
     }
 }
 exports.form = function (canInputMessage, match, request) {
-    console.log("DEBUG: " + typeof match);
     if (typeof canInputMessage != "string") {
         //TODO: errorHandler
     }
