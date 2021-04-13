@@ -1,13 +1,13 @@
 let waitModel = require("../Models/waitModel");
 let requestWrapper = require("../../clientChOlLib/RequestHandler/requestWrapper");
+let fsService = require("../Services/fsService");
 exports.s2cTest = function (respond, request) {
     console.log(respond);
     let result = {};
     let instrHead = respond.body.split(" ");
     switch (instrHead[0]) {
-        case "name-check":
+        case "name-check": {
             //等待客户端输入后发送，卡输入
-
             result.error = false;
             result.isSendToServerWaiting = true;
 
@@ -28,21 +28,41 @@ exports.s2cTest = function (respond, request) {
             result.message = "Hello, please input your name and press enter!";
 
             break;
-        case "file-check":
+        }
+        case "file-check": {
             //等待客户端输入后发送，不卡输入
+            result.error = false;
+            result.isSendToServerWaiting = true;
+
+            request = requestWrapper.setRequestNotCovered(
+                request,
+                "00",
+                "file",
+                "text",
+            );
+
+            let match = /file receive .*/g;
+            let wait = waitModel.form(true, match, request);
+            result.wait = wait;
+
+            result.isPrinted = true;
+            result.message = "SERVER: there is a file send by " + instrHead[1] + ", if you want receive this file, please input file receive " + instrHead[2];
             break;
-        case "line-check":
+        }
+        case "line-check": {
             //立即发送
             break;
-        default:
+        }
+        default: {
             result.error = true;
             result.message = "undefined ch-ol instruction from server";
+        }
     }
     return result;
 };
 exports.s2cMessage = function (respond, request) {
     let result = {};
-    switch (respond.bodyType) {
+    switch (respond.headers["body-type"]) {
         case "voice":
             //TODO
             break;
@@ -53,7 +73,13 @@ exports.s2cMessage = function (respond, request) {
             result.message = respond.body;
             break;
         case "file":
-            //TODO
+            result.error = false;
+            result.isPrinted = false;
+            result.message = "";
+            fsService.writeFile(respond.headers["file-name"], respond.body, (err) => {
+                //TODO: error handler
+                if(err) console.log("ERROR: Write File Failed");
+            });
             break;
         default:
             result.error = true;

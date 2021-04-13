@@ -37,7 +37,6 @@ exports.parse = function(message) {
     return {error: false, message: {
         body: body.message,
         method: method.message,
-        ip: headers.message["host"],
-        bodyType: headers.message["body-type"]
+        headers: headers.message
     }};
 }

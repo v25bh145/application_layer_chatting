@@ -30,10 +30,12 @@ exports.setRequestNotCovered = function (request, method, send, bodyType) {
     if (typeof request.bodyType == "undefined") request.bodyType = bodyType;
     return request;
 };
-exports.setRequestCovered = function (request, method, send, bodyType) {
+exports.setRequestCovered = function (request, method, send, bodyType, fileName) {
     request.method = method;
     request.send = send;
     request.bodyType = bodyType;
+    if(typeof(fileName) != "undefined")
+        request.fileName = fileName;
     return request;
 };
 exports.transRequestToChOl = function (request) {
@@ -48,6 +50,8 @@ exports.transRequestToChOl = function (request) {
         chOl += "body-type " + "text" + "\r\n";
     else chOl += "body-type " + request.bodyType + "\r\n";
     chOl += "host " + request.host + "\r\n";
+    if (typeof request.fileName != "undefined")
+        chOl += "file-name " + request.fileName + "\r\n";
     chOl += "body " + request.send.length + "\r\n";
     chOl += request.send + "\r\n";
     console.log(chOl);

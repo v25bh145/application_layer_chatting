@@ -43,7 +43,7 @@ exports.parse = function (message) {
             body: body.message,
             status: status.message,
             method: method.message,
-            bodyType: headers.message["body-type"],
+            headers: headers.message,
         },
     };
 };
