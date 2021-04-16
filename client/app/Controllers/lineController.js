@@ -62,6 +62,10 @@ exports.sendInstructionRequest = function(line, request, socket) {
             // 在start部分，使用wait(fromClient = true)阻塞
             break;
         }
+        case "/logout": {
+            socket.end();
+            break;
+        }
         default: {
             //错误处理
             request = {error: "ERROR: Undefined Instruction"};

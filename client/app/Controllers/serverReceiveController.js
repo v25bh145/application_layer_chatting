@@ -56,10 +56,14 @@ exports.s2cTest = function (respond, request) {
         }
         case "line-check": {
             //立即发送
+            result.error = false;
+            result.isSendToServerInstant = true;
+            result.request = requestWrapper.setRequestCovered(request, "00", "/link-success", "text");
+            result.isPrinted = false;
             break;
         }
         default: {
-            result.error = errorHandler.form("ERROR: Undefined Ch-Ol Instruction From Server");
+            result.error = errorHandler.form("Undefined Ch-Ol Instruction From Server");
         }
     }
     return result;
@@ -87,7 +91,7 @@ exports.s2cMessage = function (respond, request) {
                     //错误处理
                     if (err) {
                         result.error = errorHandler.form(
-                            "ERROR: Write File Failed",
+                            "Write File Failed",
                         );
                     }
                 },
@@ -96,7 +100,7 @@ exports.s2cMessage = function (respond, request) {
         default:
             //错误处理
             result.error = errorHandler.form(
-                "ERROR: Undefined File Type From Server",
+                "Undefined File Type From Server",
             );
     }
     return result;
@@ -105,7 +109,7 @@ exports.noMethod = function (respond, request) {
     let result = {};
     //错误处理
     result.error = errorHandler.form(
-        "ERROR: Unsupported Operation From Server",
+        "Unsupported Operation From Server",
     );
     return result;
 };

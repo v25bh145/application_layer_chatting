@@ -2,6 +2,7 @@ let userRepository = require("../Repositories/userRepository");
 let userModel = require("../Models/userModel");
 let respondWrapper = require("../../serverChOlLib/RespondHandler/respondWrapper");
 let fsService = require("../Services/fsService");
+let heartTimeService = require("../Services/heartTimerService");
 let Error = require("../Exceptions/errorHandler");
 exports.c2sInstruction = function (request, respond, socket) {
     let instrHead = request.body.split(" ");
@@ -17,6 +18,7 @@ exports.c2sInstruction = function (request, respond, socket) {
                 );
                 return { error: error };
             } else {
+                heartTimeService.setHeartTimer(user);
                 let welcome = "> welcome " + instrHead[1] + " !";
                 respond = respondWrapper.setRespond(
                     respond,
@@ -30,10 +32,16 @@ exports.c2sInstruction = function (request, respond, socket) {
             break;
         }
         case "/link-success": {
-            //TODO
+            let user = userRepository.getUserBySocket(socket);
+            heartTimeService.refreshHeartTimer(user);
+            //不会发送给服务器
+            respond.notSendToClient = true;
+            respond.error = false;
             break;
         }
         case "/file": {
+            let user = userRepository.getUserBySocket(socket);
+            heartTimeService.refreshHeartTimer(user);
             if (instrHead[1] == "receive") {
                 let fileName = instrHead[2];
                 if (fileName.split("/").length > 1) {
@@ -73,6 +81,8 @@ exports.c2sInstruction = function (request, respond, socket) {
     return respond;
 };
 exports.c2sMessage = function (request, respond, socket) {
+    let user = userRepository.getUserBySocket(socket);
+    heartTimeService.refreshHeartTimer(user);
     switch (request.headers["body-type"]) {
         case "voice": {
             //TODO
@@ -85,9 +95,7 @@ exports.c2sMessage = function (request, respond, socket) {
                 false,
                 "00",
                 "11",
-                userRepository.getUserBySocket(socket).nickName +
-                    ": " +
-                    request.body,
+                user.nickName + ": " + request.body,
                 userRepository.insteadOfMe(socket),
             );
             break;
@@ -118,10 +126,7 @@ exports.c2sMessage = function (request, respond, socket) {
                 false,
                 "11",
                 "10",
-                "file-check " +
-                    userRepository.getUserBySocket(socket).nickName +
-                    " " +
-                    fileName,
+                "file-check " + user.nickName + " " + fileName,
                 userRepository.insteadOfMe(socket),
             );
             break;

@@ -13,10 +13,13 @@ exports.run = function (socket) {
             //将ch-ol转换为request对象
             let requestWrapped = requestParser.parse(chunk);
             if (requestWrapped.error == true) {
-                let error = errorHandler.form(requestWrapped.message, false, "");
+                let error = errorHandler.form(
+                    requestWrapped.message,
+                    false,
+                    "",
+                );
                 error.printError();
-            }
-            else {
+            } else {
                 //路由器，后转控制器
                 let request = requestWrapped.message;
                 //TODO delete debug
@@ -30,8 +33,10 @@ exports.run = function (socket) {
                 if (respond.error) {
                     respond.error.printError();
                     respond.error.broadcast(userRepository.me(socket));
-                }
-                else {
+                } else if (
+                    typeof respond.notSendToClient == "undefined" ||
+                    !respond.notSendToClient
+                ) {
                     //将respond对象转换为ch-ol
                     let chOl = respondWrapper.transRespondToChOl(respond);
                     //如果需要发包，即发包给客户端

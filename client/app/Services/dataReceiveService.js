@@ -7,6 +7,7 @@ let data = "";
 exports.run = function (socket) {
     socket.addListener("data", function (chunk) {
         if (respondParser.isFullChOl(chunk)) {
+            console.log(chunk);
             //初始化request对象
             let request = requestWrapper.initRequest();
             //将ch-ol转换为respond对象

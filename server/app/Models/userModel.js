@@ -5,11 +5,14 @@ class User {
     id;
     socket;
     nickName;
+    heartTimerId;
+    respondTimerId;
     constructor(socket, nickName) {
         let that = this;
         that.id = tmpNum++;
         that.socket = socket;
         that.nickName = nickName;
+        that.respondTimerId = null;
     }
     //考虑到后面可能将数据存在缓存数据库中，因此设置成可以异步的方法。
     save(callback) {
@@ -23,6 +26,6 @@ class User {
         return this.repository.delete(this, callback);
     }
 }
-exports.form = function(socket, nickName) {
+exports.form = function (socket, nickName) {
     return new User(socket, nickName);
-}
+};

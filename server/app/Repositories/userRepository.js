@@ -17,6 +17,7 @@ exports.save = function (user) {
 }
 exports.delete = function(user) {
     if(!user) return false;
+    console.log(user.nickName + " 退出房间");
     delete userArray[user.id];
     counts--;
     return true;

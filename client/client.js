@@ -17,5 +17,5 @@ socket.setEncoding("utf8");
 dataReceiveService.run(socket);
 lineService.run(socket);
 socket.on('error', function() {
-    console.log("似乎已经断开连接");
+    console.log("与服务器断开连接");
 })
