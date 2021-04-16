@@ -16,9 +16,10 @@ exports.save = function (user) {
     return true;
 }
 exports.delete = function(user) {
+    if(!user) return false;
     delete userArray[user.id];
-    count--;
-    return false;
+    counts--;
+    return true;
 }
 exports.getCounts = function() {
     return counts;

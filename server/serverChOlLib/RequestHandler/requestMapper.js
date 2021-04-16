@@ -3,7 +3,7 @@ class Mapper {
     _cols = 0;
     constructor(message = "") {
         let that = this;
-        that._segments = message.split("\r\n");
+        that._segments = message.split("\n");
         that._cols = 0;
     }
     protocolInfoMapper = () => {

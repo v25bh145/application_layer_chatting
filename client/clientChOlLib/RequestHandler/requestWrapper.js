@@ -42,18 +42,18 @@ exports.transRequestToChOl = function (request) {
     if (typeof request.method == "undefined") return false;
 
     let chOl = "";
-    chOl += request.protocol + " " + request.version + "\r\n";
-    chOl += request.method + "\r\n";
-    chOl += "header" + "\r\n";
+    chOl += request.protocol + " " + request.version + "\n";
+    chOl += request.method + "\n";
+    chOl += "header" + "\n";
     //为指令时，默认为文字
     if (typeof request.bodyType == "undefined")
-        chOl += "body-type " + "text" + "\r\n";
-    else chOl += "body-type " + request.bodyType + "\r\n";
-    chOl += "host " + request.host + "\r\n";
+        chOl += "body-type " + "text" + "\n";
+    else chOl += "body-type " + request.bodyType + "\n";
+    chOl += "host " + request.host + "\n";
     if (typeof request.fileName != "undefined")
-        chOl += "file-name " + request.fileName + "\r\n";
-    chOl += "body " + request.send.length + "\r\n";
-    chOl += request.send + "\r\n";
-    console.log(chOl);
+        chOl += "file-name " + request.fileName + "\n";
+    chOl += "body " + request.send.length + "\n";
+    chOl += request.send + "\n";
+    // console.log(chOl);
     return chOl;
 };

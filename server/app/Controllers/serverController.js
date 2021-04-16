@@ -2,20 +2,20 @@ let userRepository = require("../Repositories/userRepository");
 let userModel = require("../Models/userModel");
 let respondWrapper = require("../../serverChOlLib/RespondHandler/respondWrapper");
 let fsService = require("../Services/fsService");
+let Error = require("../Exceptions/errorHandler");
 exports.c2sInstruction = function (request, respond, socket) {
     let instrHead = request.body.split(" ");
     switch (instrHead[0]) {
-        case "name": {
+        case "/name": {
             let user = userModel.form(socket, instrHead[1]);
             if (typeof instrHead[1] == "undefined" || !user.save()) {
-                respond = respondWrapper.setRespond(
-                    respond,
-                    false,
-                    "11",
-                    "10",
-                    "name-check",
-                    userRepository.me(socket),
+                //错误处理
+                let error = Error.form(
+                    "Illegal User Name",
+                    true,
+                    "Server: Illegal User Name",
                 );
+                return { error: error };
             } else {
                 let welcome = "> welcome " + instrHead[1] + " !";
                 respond = respondWrapper.setRespond(
@@ -29,14 +29,22 @@ exports.c2sInstruction = function (request, respond, socket) {
             }
             break;
         }
-        case "link-success": {
+        case "/link-success": {
             //TODO
             break;
         }
-        case "file": {
-            //TODO check fileName
+        case "/file": {
             if (instrHead[1] == "receive") {
                 let fileName = instrHead[2];
+                if (fileName.split("/").length > 1) {
+                    //错误处理
+                    let error = Error.form(
+                        "Illegal File Name",
+                        true,
+                        "Server: Illegal File Name",
+                    );
+                    return { error: error };
+                }
                 let fileContent = fsService.readFileSync(fileName);
                 respond = respondWrapper.setRespond(
                     respond,
@@ -46,24 +54,20 @@ exports.c2sInstruction = function (request, respond, socket) {
                     fileContent,
                     userRepository.me(socket),
                     "file",
-                    fileName
+                    fileName,
                 );
                 break;
             }
         }
         default: {
-            //向客户端发送错误信息
+            //错误处理
             //以11为方法，10为状态码发送
-            let errorInfo = "> unsupported type of instruct";
-            respond = respondWrapper.setRespond(
-                respond,
+            let error = Error.form(
+                "Unsupported Type Of Instruct",
                 true,
-                "10",
-                "11",
-                errorInfo,
-                userRepository.me(socket),
+                "Server: Unsupported Type Of Instruct",
             );
-            break;
+            return { error: error };
         }
     }
     return respond;
@@ -89,12 +93,25 @@ exports.c2sMessage = function (request, respond, socket) {
             break;
         }
         case "file": {
-            //TODO fileName check & file check
             let fileName = request.headers["file-name"];
+            if (fileName.split("/").length > 1) {
+                //错误处理
+                let error = Error.form(
+                    "Illegal File Name",
+                    true,
+                    "Server: Illegal File Name",
+                );
+                return { error: error };
+            }
             let res = fsService.writeFileSync(fileName, request.body);
             if (res) {
-                //TODO: errorhandler
-                console.log("ERR: " + "File Write Error");
+                //错误处理
+                let error = Error.form(
+                    "File Write Error",
+                    true,
+                    "Server: File Write Error",
+                );
+                return { error: error };
             }
             respond = respondWrapper.setRespond(
                 respond,
@@ -110,18 +127,14 @@ exports.c2sMessage = function (request, respond, socket) {
             break;
         }
         default: {
-            //向客户端发送错误信息
+            //错误处理
             //以11为方法，10为状态码发送
-            let errorInfo = "> unsupported type of message";
-            respond = respondWrapper.setRespond(
-                respond,
+            let error = Error.form(
+                "Unsupported Type Of Message",
                 true,
-                "10",
-                "11",
-                errorInfo,
-                userRepository.me(socket),
+                "Server: Unsupported Type Of Message",
             );
-            break;
+            return { error: error };
         }
     }
     return respond;
@@ -140,14 +153,12 @@ exports.questName = function (request, respond, socket) {
     return respond;
 };
 exports.noMethod = function (request, respond, socket) {
-    let errorInfo = "> unsupported operation";
-    respond = respondWrapper.setRespond(
-        respond,
+    //错误处理
+    //以11为方法，10为状态码发送
+    let error = Error.form(
+        "Unsupported Type Of Operation",
         true,
-        "10",
-        "11",
-        errorInfo,
-        userRepository.me(socket),
+        "Server: Unsupported Type Of Operation",
     );
-    return respond;
+    return { error: error };
 };

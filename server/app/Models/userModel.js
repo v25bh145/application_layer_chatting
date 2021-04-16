@@ -13,18 +13,16 @@ class User {
     }
     //考虑到后面可能将数据存在缓存数据库中，因此设置成可以异步的方法。
     save(callback) {
-        return this.repository.save(this, callback);
+        let that = this;
+        // console.log(typeof that.nickName + "  " +typeof that.socket);
+        if (typeof that.nickName != "string" || typeof that.socket != "object")
+            return false;
+        return that.repository.save(this, callback);
     }
     delete(callback) {
         return this.repository.delete(this, callback);
     }
 }
 exports.form = function(socket, nickName) {
-    if (typeof nickName != "string") {
-        //TODO: errorHandler
-    }
-    if (typeof socket != "object") {
-        //TODO: errorHandler
-    }
     return new User(socket, nickName);
 }

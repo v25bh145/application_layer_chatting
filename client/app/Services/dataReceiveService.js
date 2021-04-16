@@ -1,7 +1,7 @@
 let requestWrapper = require("../../clientChOlLib/RequestHandler/requestWrapper");
 let respondParser = require("../../clientChOlLib/RespondHandler/respondParser");
-let errorHandler = require("../Exceptions/exceptionHandler");
-let router = require("../../Router/router");
+let errorHandler = require("../Exceptions/errorHandler");
+let serverReceiveRouter = require("../../Router/serverReceiveRouter");
 
 let data = "";
 exports.run = function (socket) {
@@ -11,18 +11,21 @@ exports.run = function (socket) {
             let request = requestWrapper.initRequest();
             //将ch-ol转换为respond对象
             let respondWrapped = respondParser.parse(chunk);
-            if (respondWrapped.error == true)
-                errorHandler.printError(respondWrapped);
+            if (respondWrapped.error == true) {
+                let error = errorHandler.form(respondWrapped.message);
+                error.printError();
+            }
             else {
                 let respond = respondWrapped.message;
-                console.log("接收到响应");
-                console.log(respond);
+                // console.log("接收到响应");
+                // console.log(respond);
                 //路由器，后转控制器
-                result = router.route(respond, request);
-                console.log("产生结果");
-                console.log(result);
-                if (typeof result.error != "undefined" && result.error == true)
-                    errorHandler.printError(result);
+                result = serverReceiveRouter.route(respond, request);
+                // console.log("产生结果");
+                // console.log(result);
+                //错误处理
+                if (typeof result.error != "undefined" && result.error)
+                    result.error.printError();
                 else {
                     if (
                         typeof result.isSendToServerInstant != "undefined" &&

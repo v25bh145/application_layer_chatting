@@ -27,17 +27,17 @@ exports.transRespondToChOl = function (respond) {
     if (typeof respond.method == "undefined") return false;
 
     let chOl = "";
-    chOl += respond.protocol + " " + respond.version + "\r\n";
-    chOl += respond.method + "\r\n";
-    chOl += respond.status + "\r\n";
-    chOl += "header" + "\r\n";
+    chOl += respond.protocol + " " + respond.version + "\n";
+    chOl += respond.method + "\n";
+    chOl += respond.status + "\n";
+    chOl += "header" + "\n";
     //为指令时，默认为文字
     if (typeof respond.bodyType == "undefined")
-        chOl += "body-type " + "text" + "\r\n";
-    else chOl += "body-type " + respond.bodyType + "\r\n";
+        chOl += "body-type " + "text" + "\n";
+    else chOl += "body-type " + respond.bodyType + "\n";
     if (typeof respond.fileName != "undefined")
-        chOl += "file-name " + respond.fileName + "\r\n";
-    chOl += "body " + respond.send.length + "\r\n";
-    chOl += respond.send + "\r\n";
+        chOl += "file-name " + respond.fileName + "\n";
+    chOl += "body " + respond.send.length + "\n";
+    chOl += respond.send + "\n";
     return chOl;
 };

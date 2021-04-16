@@ -5,7 +5,7 @@ let Mapper = require("./requestMapper");
 
 exports.isFullChOl = function(chunk) {
     let array = [];
-    array = chunk.split("\r\n");
+    array = chunk.split("\n");
     if (array[0].split(" ")[0] == "ch-ol")
         return true;
     else return false;

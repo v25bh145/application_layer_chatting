@@ -1,8 +1,9 @@
 let waitModel = require("../Models/waitModel");
 let requestWrapper = require("../../clientChOlLib/RequestHandler/requestWrapper");
 let fsService = require("../Services/fsService");
+let errorHandler = require("../Exceptions/errorHandler");
 exports.s2cTest = function (respond, request) {
-    console.log(respond);
+    // console.log(respond);
     let result = {};
     let instrHead = respond.body.split(" ");
     switch (instrHead[0]) {
@@ -20,12 +21,12 @@ exports.s2cTest = function (respond, request) {
 
             //正则匹配
             //name [字母/数字/下划线]+
-            let match = /name ([A-Z]|[0-9]|[a-z]|\_)+/g;
+            let match = /\/name ([A-Z]|[0-9]|[a-z]|\_)+/g;
             let wait = waitModel.form(false, match, request);
             result.wait = wait;
 
             result.isPrinted = true;
-            result.message = "Hello, please input your name and press enter!";
+            result.message = "Hello, please input your name and press enter!(use \"/name [YourName]\")";
 
             break;
         }
@@ -46,7 +47,11 @@ exports.s2cTest = function (respond, request) {
             result.wait = wait;
 
             result.isPrinted = true;
-            result.message = "SERVER: there is a file send by " + instrHead[1] + ", if you want receive this file, please input file receive " + instrHead[2];
+            result.message =
+                "SERVER: there is a file send by " +
+                instrHead[1] +
+                ", if you want receive this file, please use \"/file receive\" " +
+                instrHead[2];
             break;
         }
         case "line-check": {
@@ -54,8 +59,7 @@ exports.s2cTest = function (respond, request) {
             break;
         }
         default: {
-            result.error = true;
-            result.message = "undefined ch-ol instruction from server";
+            result.error = errorHandler.form("ERROR: Undefined Ch-Ol Instruction From Server");
         }
     }
     return result;
@@ -76,20 +80,32 @@ exports.s2cMessage = function (respond, request) {
             result.error = false;
             result.isPrinted = false;
             result.message = "";
-            fsService.writeFile(respond.headers["file-name"], respond.body, (err) => {
-                //TODO: error handler
-                if(err) console.log("ERROR: Write File Failed");
-            });
+            fsService.writeFile(
+                respond.headers["file-name"],
+                respond.body,
+                (err) => {
+                    //错误处理
+                    if (err) {
+                        result.error = errorHandler.form(
+                            "ERROR: Write File Failed",
+                        );
+                    }
+                },
+            );
             break;
         default:
-            result.error = true;
-            result.message = "undefined file type from server";
+            //错误处理
+            result.error = errorHandler.form(
+                "ERROR: Undefined File Type From Server",
+            );
     }
     return result;
 };
 exports.noMethod = function (respond, request) {
     let result = {};
-    result.error = true;
-    result.message = "> unsupported operation from server";
+    //错误处理
+    result.error = errorHandler.form(
+        "ERROR: Unsupported Operation From Server",
+    );
     return result;
 };

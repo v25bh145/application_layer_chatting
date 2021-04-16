@@ -34,6 +34,10 @@ exports.checkMessage = function(message) {
 exports.isMessageTest = function(message) {
     let wait = exports.getFirst();
     if(!wait) return false;
+    if(wait.fromClient) {
+        //发送instruction包
+        return false;
+    }
     //用户输入的数据是否符合请求规定的规范
     if(exports.checkMessage(message)) {
         return true;
@@ -42,8 +46,6 @@ exports.isMessageTest = function(message) {
         //发送message/instruction包
         return false;
     } else {
-        //TODO: 报错，重来
-        console.log("error> oops, please input the correct respond from server...");
-        return undefined;
+        return null;
     }
 };

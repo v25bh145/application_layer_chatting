@@ -10,11 +10,14 @@ class Wait {
     canInputMessage;
     match;
     request;
-    constructor(canInputMessage, match, request) {
+    fromClient;
+    constructor(canInputMessage, match, request, fromClient) {
         let that = this;
         that.canInputMessage = canInputMessage;
         that.match = match;
         that.request = request;
+        if(typeof fromClient == "undefined") that.fromClient = false;
+        else that.fromClient = fromClient;
     }
     //考虑到后面可能将数据存在缓存数据库中，因此设置成可以异步的方法。
     save(callback) {
@@ -25,14 +28,5 @@ class Wait {
     }
 }
 exports.form = function (canInputMessage, match, request) {
-    if (typeof canInputMessage != "string") {
-        //TODO: errorHandler
-    }
-    if (typeof match != "object") {
-        //TODO: errorHandler
-    }
-    if (typeof request != "object") {
-        //TODO: errorHandler
-    }
     return new Wait(canInputMessage, match, request);
 };

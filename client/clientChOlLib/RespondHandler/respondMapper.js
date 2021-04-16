@@ -3,7 +3,7 @@ class Mapper {
     _cols = 0;
     constructor(message = "") {
         let that = this;
-        that._segments = message.split("\r\n");
+        that._segments = message.split("\n");
         that._cols = 0;
     }
     protocolInfoMapper = () => {
@@ -64,13 +64,13 @@ class Mapper {
         let status = that._segments[that._cols++];
         switch (status) {
             case "00":
-                return { error: false, message: "00" };
+                return { error: false, message: "success" };
             case "01":
-                return { error: false, message: "01" };
+                return { error: false, message: "net error" };
             case "10":
-                return { error: false, message: "10" };
+                return { error: false, message: "server error" };
             case "11":
-                return { error: false, message: "11" };
+                return { error: false, message: "server quest" };
             default:
                 return {
                     error: true,

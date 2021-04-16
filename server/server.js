@@ -15,8 +15,12 @@ let server = net.createServer(function (socket) {
     dataReceiveService.run(socket);
 
     socket.on('close', function () {
-        userRepository.delete(userRepository.findUserBySocket(socket));
+        userRepository.delete(userRepository.getUserBySocket(socket));
     });
+
+    socket.on('error', function () {
+        userRepository.delete(userRepository.getUserBySocket(socket));
+    })
 });
 /**
  * 监听
