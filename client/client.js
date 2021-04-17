@@ -10,13 +10,16 @@ let lineService = require("./app/Services/lineService");
 //从服务器接收数据
 let dataReceiveService = require("./app/Services/dataReceiveService");
 
-let socket = net.connect(3000, "127.0.0.1", () => {
+argService.runBeforeConnect();
+
+let socket = net.connect(global.port, global.ip, () => {
     console.log("连接成功！");
 });
 
+argService.runAfterConnect(socket);
+
 socket.setEncoding("utf8");
 
-argService.run(socket);
 dataReceiveService.run(socket);
 lineService.run(socket);
 
