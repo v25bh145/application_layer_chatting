@@ -7,7 +7,10 @@ let data = "";
 exports.run = function (socket) {
     socket.addListener("data", function (chunk) {
         if (respondParser.isFullChOl(chunk)) {
-            console.log(chunk);
+            if(global.DEBUG_MODE) {
+                console.log("接收包");
+                console.log(chunk);
+            }
             //初始化request对象
             let request = requestWrapper.initRequest();
             //将ch-ol转换为respond对象
@@ -18,12 +21,8 @@ exports.run = function (socket) {
             }
             else {
                 let respond = respondWrapped.message;
-                // console.log("接收到响应");
-                // console.log(respond);
                 //路由器，后转控制器
                 result = serverReceiveRouter.route(respond, request);
-                // console.log("产生结果");
-                // console.log(result);
                 //错误处理
                 if (typeof result.error != "undefined" && result.error)
                     result.error.printError();
@@ -35,6 +34,10 @@ exports.run = function (socket) {
                         let chOl = requestWrapper.transRequestToChOl(
                             result.request,
                         );
+                        if(global.DEBUG_MODE) {
+                            console.log("发送包");
+                            console.log(chOl);
+                        }
                         socket.write(chOl);
                     } else if (
                         typeof result.isSendToServerWaiting != "undefined" &&

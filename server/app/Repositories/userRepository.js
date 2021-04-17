@@ -8,9 +8,10 @@ let findIdBySocket = function(socket) {
     return -1;
 } 
 exports.save = function (user) {
-    for(let id in userArray)
+    if(!global.DEBUG_MODE && !global.DEBUG_TEST_MODE) {
+        for(let id in userArray)
         if(userArray[id].nickName == user.nickName) return false;
-
+    }
     userArray[user.id] = user;
     counts++;
     return true;
