@@ -4,6 +4,7 @@ let requestWrapper = require("../../clientChOlLib/RequestHandler/requestWrapper"
 let sendNamePack = false;
 exports.runBeforeConnect = function () {
     global.DEBUG_MODE = false;
+    global.DROP_HEART_TIME = false;
     global.ip = null;
     global.port = null;
     for (let i = 2; i < process.argv.length; i++) {
@@ -41,6 +42,10 @@ exports.runBeforeConnect = function () {
                 global.DEBUG_MODE = true;
                 break;
             }
+            case "--dropPack": {
+                global.DROP_HEART_TIME = true;
+                break;
+            }
             case "-name": {
                 //后面无参数或参数带'-'，则报错
                 if (
@@ -51,7 +56,7 @@ exports.runBeforeConnect = function () {
                     console.log("请使用 --help 查看程序说明")
                     process.exit();
                 } else {
-                    sendNamePack = true;
+                    sendNamePack = ++i;
                 }
                 break;
             }
@@ -68,8 +73,7 @@ exports.runBeforeConnect = function () {
                 console.log("--help 查看帮助");
                 console.log("聊天指令");
                 console.log("/file [filepath] 发送文件给其他人，其他人可以选择接受可以忽略");
-                console.log("/file receive <file-name> 接受当前文件");
-                console.log("/file ignore 忽略当前文件");
+                console.log("/file receive <file-name> 下载文件");
                 console.log("/logout 登出");
                 console.log("/name 命名或重新命名");
                 console.log("========================")
@@ -88,10 +92,10 @@ exports.runBeforeConnect = function () {
     }
 };
 exports.runAfterConnect = function (socket) {
-    if (sendNamePack) {
+    if (sendNamePack != false) {
         //发送姓名包(耦合了一段内容，不过问题不是很大)
         let request = lineRouter.router(
-            "/name " + process.argv[++i],
+            "/name " + process.argv[sendNamePack],
             requestWrapper.initRequest(),
             socket,
         );

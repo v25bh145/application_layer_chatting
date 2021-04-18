@@ -16,11 +16,13 @@ let server = net.createServer(function (socket) {
     dataReceiveService.run(socket);
 
     socket.on("close", function () {
-        userRepository.delete(userRepository.getUserBySocket(socket));
+        let user = userRepository.getUserBySocket(socket);
+        if(user != false) user.delete();
     });
 
     socket.on("error", function () {
-        userRepository.delete(userRepository.getUserBySocket(socket));
+        let user = userRepository.getUserBySocket(socket);
+        if(user != false) user.delete();
     });
 });
 /**

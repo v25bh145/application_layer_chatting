@@ -1,3 +1,4 @@
+let userRepository = require("../Repositories/userRepository");
 exports.run = function () {
     global.DEBUG_MODE = false;
     global.DEBUG_TEST_MODE = false;
@@ -9,6 +10,12 @@ exports.run = function () {
             }
             case "--test": {
                 global.DEBUG_TEST_MODE = true;
+                break;
+            }
+            case "--nowUsers": {
+                setInterval(() => {
+                    console.log("now users: " + userRepository.getCounts());
+                }, 5000);
                 break;
             }
             default: {

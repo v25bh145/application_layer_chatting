@@ -3,6 +3,12 @@ let fsService = require("../Services/fsService");
 let requestWrapper = require("../../clientChOlLib/RequestHandler/requestWrapper");
 exports.sendTestRequest = function(line, request, socket) {
     // console.log("发送test包");
+    let instrArr = line.split(" ");
+    if(instrArr.length >= 2 && instrArr[0] == "/file" && instrArr[1] == "ignore") {
+        let nowWait = waitRepository.getFirst();
+        nowWait.delete;
+        return null;
+    }
     let nowWait = waitRepository.getFirst();
     request = requestWrapper.setRequestCovered(
         nowWait.request,
@@ -40,6 +46,11 @@ exports.sendInstructionRequest = function(line, request, socket) {
             break;
         }
         case "/file": {
+            //由于指令起名引起的误操作
+            if(str[1] == "ignore" || str[1] == "receive") {
+                request = {error: "Wrong File Name OR No File In The Receive List..."};
+                return request;
+            }
             let filepaths = line.split(" ")[1].split("/");
             let fileName = filepaths[filepaths.length - 1];
             let fsRes = fsService.readFileSync(str[1]);

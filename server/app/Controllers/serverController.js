@@ -12,9 +12,9 @@ exports.c2sInstruction = function (request, respond, socket) {
             if (typeof instrHead[1] == "undefined" || !user.save()) {
                 //错误处理
                 let error = Error.form(
-                    "Illegal User Name",
+                    "The Name Is Used Or Illegal",
                     true,
-                    "Server: Illegal User Name",
+                    "Server: The Name Is Used Or Illegal",
                 );
                 return { error: error };
             } else {
@@ -54,6 +54,15 @@ exports.c2sInstruction = function (request, respond, socket) {
                     return { error: error };
                 }
                 let fileContent = fsService.readFileSync(fileName);
+                if (fileContent == false) {
+                    //错误处理
+                    let error = Error.form(
+                        "Illegal File Name",
+                        true,
+                        "Server: Illegal File Name",
+                    );
+                    return { error: error };
+                }
                 respond = respondWrapper.setRespond(
                     respond,
                     false,

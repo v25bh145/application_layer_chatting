@@ -21,7 +21,7 @@ exports.s2cTest = function (respond, request) {
 
             //正则匹配
             //name [字母/数字/下划线]+
-            let match = /\/name ([A-Z]|[0-9]|[a-z]|\_)+/g;
+            let match = new RegExp("/name ([A-Z]|[0-9]|[a-z]|_)", "g");
             let wait = waitModel.form(false, match, request);
             result.wait = wait;
 
@@ -42,7 +42,8 @@ exports.s2cTest = function (respond, request) {
                 "text",
             );
 
-            let match = /file receive .*/g;
+            let match = new RegExp("/file (receive " + instrHead[2] + "|ignore)", "g");
+            // let match = /file (receive .*|ignore)/g;
             let wait = waitModel.form(true, match, request);
             result.wait = wait;
 
@@ -50,14 +51,15 @@ exports.s2cTest = function (respond, request) {
             result.message =
                 "SERVER: there is a file send by " +
                 instrHead[1] +
-                ", if you want receive this file, please use \"/file receive\" " +
-                instrHead[2];
+                ", if you want receive this file, please use \"/file receive " +
+                instrHead[2] + "\", if you want to ignore this file, please use \"/file ignore\"";
             break;
         }
         case "line-check": {
             //立即发送
             result.error = false;
-            result.isSendToServerInstant = true;
+            if(!global.DROP_HEART_TIME)
+                result.isSendToServerInstant = true;
             result.request = requestWrapper.setRequestCovered(request, "00", "/link-success", "text");
             result.isPrinted = false;
             break;

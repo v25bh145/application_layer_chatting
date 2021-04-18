@@ -12,7 +12,8 @@ exports.run = function (socket) {
     rl.on("line", function (line) {
         if(line == "") return;
         let request = lineRouter.router(line, requestWrapper.initRequest(), socket);
-        if(typeof request.error != "undefined" && request.error) {
+        if(request == null) return;
+        if(typeof request.error != "undefined" && typeof request.error == "string") {
             let error = errorHandler.form(request.error);
             error.printError();
         } else {
