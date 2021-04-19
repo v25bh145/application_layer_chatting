@@ -1,5 +1,5 @@
 {
-    "name": "tcp-chat",
-    "description": "Our first TCP server",
-    "version": "0.0.1"
+    "name": "chol-chat",
+    "description": "A chatting server based on CH_OL",
+    "version": "1.0.0"
 }
